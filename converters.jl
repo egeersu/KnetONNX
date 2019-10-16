@@ -53,6 +53,7 @@ function node_to_leakyrelu(node, g)
     LeakyReLU(alpha)
 end
 
+#conv1 = KnetONNX.KnetLayers.Conv(;height=3, width=3, inout = 3=>64)
 #currently treating [1,1,1,1] padding as an integer 1, same for stride
 function node_to_conv(node, weightdims, g)
     dw = weightdims[node.input[2]]
@@ -130,3 +131,4 @@ end
 function node_to_RNN(node, g)
     activations = node.attribute[:activations]
     hidden_size = node.attribute[:hidden_size]
+end

@@ -8,7 +8,8 @@ end
 Sampling{T}(;window=2, padding=0, stride=window, mode=0, maxpoolingNanOpt=0, alpha=1) where T <: Function =
     Sampling{T}((window=window, padding=padding, stride=stride, mode=mode, maxpoolingNanOpt=maxpoolingNanOpt, alpha=alpha))
 
-(m::Sampling{typeof(pool)})(x)   =  pool(x;m.options...)
+#reshaped so that vgg16 works
+(m::Sampling{typeof(pool)})(x)   =  pool(reshape(x, (size(x)[1:3]..., 1));m.options...)
 (m::Sampling{typeof(unpool)})(x) =  unpool(x;m.options...)
 
 """
