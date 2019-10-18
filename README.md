@@ -18,7 +18,7 @@ Once you download the ONNX file, call ONNXtoKnet with the ONNX file's path to cr
 Here is how you create the Knet model corresponding to the ONNX file, and perform a forward pass:
 
 ```julia
-using KnetONNX;
+using Knet; using KnetONNX;
 
 #provide the ONNX file's path
 model = ONNXtoKnet("vgg.onnx");
@@ -27,7 +27,7 @@ model = ONNXtoKnet("vgg.onnx");
 x = ones(Float32,224,224,3,10)
 
 #call KnetModel object with the model input
-y = model(x)
+y = model(x) #1000×10 Array{Float32,2}
 ```
 ## Supported Operations
 - [x] ReLU
