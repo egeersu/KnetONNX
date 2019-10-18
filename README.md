@@ -27,7 +27,7 @@ model = ONNXtoKnet("vgg.onnx");
 x = ones(Float32,224,224,3,10)
 
 #call KnetModel object with the model input
-model(x) #1000×10 Array{Float32,2}
+model(x) #the output is a 1000×10 Array{Float32,2}
 ```
 ## Supported Operations
 - [x] ReLU
