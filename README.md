@@ -26,7 +26,7 @@ model = ONNXtoKnet("vgg.onnx");
 #dummy input for prediction
 x = ones(Float32,224,224,3,10)
 
-#simply 
+#call KnetModel object with the model input
 y = model(x)
 ```
 ## Supported Operations
