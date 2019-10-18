@@ -17,7 +17,7 @@ Once you download the ONNX file, call ONNXtoKnet with the ONNX file's path to cr
 
 Here is how you create the Knet model corresponding to the ONNX file, and perform a forward pass:
 
-```
+```julia
 using KnetONNX;
 
 #provide the ONNX file's path
