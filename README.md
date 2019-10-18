@@ -42,7 +42,7 @@ model(x) #the output is a 1000×10 Array{Float32,2}
 - [x] ImageScaler
 - [ ] RNN
 
-## Collaboration
+## Collaboration
 Here are some cool ideas if you want to collaborate:
 - Adding a new [KnetLayer.](https://github.com/ekinakyurek/KnetLayers.jl)
 - Adding a new [converter:](https://github.com/egeersu/KnetONNX/blob/master/converters.jl) onnx graph node -> KnetLayer
