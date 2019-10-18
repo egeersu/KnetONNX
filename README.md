@@ -12,9 +12,9 @@ This package lets you read ONNX files into Knet Models. It loads the pre-trained
 
 Here is how you create the Knet model corresponding to the ONNX file, and perform a forward pass:
 
-'''
+```
 using KnetONNX;
 model = ONNXtoKnet("vgg.onnx");
 x = ones(Float32,224,224,3,10)
 model(x)
-''''
+```
