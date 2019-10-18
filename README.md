@@ -30,13 +30,14 @@ x = ones(Float32,224,224,3,10)
 y = model(x)
 ```
 ## Supported Operations
-- [x]ReLU
-- [x]LeakyReLU
+- [x] ReLU
+- [x] LeakyReLU
 - [x] Conv
 - [x] MaxPool
-- [x]Dropout
-> Flatten
-> Gemm
-> Add
-> BatchNormalization
-> ImageScaler
+- [x] Dropout
+- [x] Flatten
+- [x] Gemm
+- [x] Add
+- [x] BatchNormalization
+- [x] ImageScaler
+- [] RNN 
