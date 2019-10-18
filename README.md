@@ -1,6 +1,7 @@
 <img src="https://github.com/onnx/onnx/blob/master/docs/ONNX_logo_main.png?raw=true" width="400">
 
 Are you planning to move your models from PyTorch or Tensorflow to Knet?
+
 Or are you planning to play and experiment with popular pre-trained neural networks?
 
 KnetONNX lets you read an ONNX file and create a Knet Model that can be used for prediction, re-designed or re-trained.
