@@ -9,6 +9,10 @@ If you are planning to move your models from PyTorch or Tensorflow to Knet, or s
  
 Operators are implemented externally to the graph, but the set of built-in operators are portable across frameworks. Every framework supporting ONNX will provide implementations of these operators on the applicable data types.
 
+Although not all operations are implemented yet, visit ONNX's [model zoo](https://github.com/onnx/models) to download pre-trained, state-of-the-art models in the ONNX format.
+
+Once you download the ONNX file, call ONNXtoKnet with the ONNX file's path to create the model.
+
 ## Tutorial
 
 Here is how you create the Knet model corresponding to the ONNX file, and perform a forward pass:
