@@ -8,4 +8,13 @@ Each computation dataflow graph is structured as a list of nodes that form an ac
 
 Operators are implemented externally to the graph, but the set of built-in operators are portable across frameworks. Every framework supporting ONNX will provide implementations of these operators on the applicable data types.
 
-This package lets you read ONNX files into Knet Models. It loads the pre-trained weights and is therefore ready for prediction. Check out the documentation for KnetModel.jl if you aim to modify or re-train the model.
+This package lets you read ONNX files into Knet Models. It loads the pre-trained weights so the model will be ready for prediction. 
+
+Here is how you create the Knet model corresponding to the ONNX file, and perform a forward pass:
+
+'''
+using KnetONNX;
+model = ONNXtoKnet("vgg.onnx");
+x = ones(Float32,224,224,3,10)
+model(x)
+''''
