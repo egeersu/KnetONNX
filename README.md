@@ -30,11 +30,11 @@ x = ones(Float32,224,224,3,10)
 y = model(x)
 ```
 ## Supported Operations
-` ReLU
-` LeakyReLU
-` Conv
-` MaxPool
-> Dropout
+- [x]ReLU
+- [x]LeakyReLU
+- [x] Conv
+- [x] MaxPool
+- [x]Dropout
 > Flatten
 > Gemm
 > Add
