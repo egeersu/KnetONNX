@@ -47,4 +47,4 @@ Here are some cool ideas if you want to collaborate:
 - Adding a new [KnetLayer.](https://github.com/ekinakyurek/KnetLayers.jl)
 - Adding a new [converter:](https://github.com/egeersu/KnetONNX/blob/master/converters.jl) onnx graph node -> KnetLayer
 - New KnetModel functionalities. We still can't handle models with multiple paths. 
-- Testing ONNX models from the zoo and sending bug reports. 
+- Testing ONNX models from the [zoo](https://github.com/onnx/models) and sending bug reports. 
