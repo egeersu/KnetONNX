@@ -19,7 +19,24 @@ Here is how you create the Knet model corresponding to the ONNX file, and perfor
 
 ```
 using KnetONNX;
+
+#provide the ONNX file's path
 model = ONNXtoKnet("vgg.onnx");
+
+#dummy input for prediction
 x = ones(Float32,224,224,3,10)
+
+#simply 
 y = model(x)
 ```
+## Supported Operations
+> ReLU
+> LeakyReLU
+> Conv
+> MaxPool
+> Dropout
+> Flatten
+> Gemm
+> Add
+> BatchNormalization
+> ImageScaler
