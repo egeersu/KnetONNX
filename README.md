@@ -40,4 +40,4 @@ y = model(x)
 - [x] Add
 - [x] BatchNormalization
 - [x] ImageScaler
-- [] RNN 
+- [ ] RNN 
