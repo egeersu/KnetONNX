@@ -1,10 +1,8 @@
 <img src="https://github.com/onnx/onnx/blob/master/docs/ONNX_logo_main.png?raw=true" width="400">
 
-Are you planning to move your models from PyTorch or Tensorflow to Knet?
-
-Or are you planning to play and experiment with popular pre-trained neural networks?
-
 KnetONNX lets you read an ONNX file and create a Knet Model that can be used for prediction, re-designed or re-trained.
+
+If you are planning to move your models from PyTorch or Tensorflow to Knet, or simply desiring to play with popular pre-trained neural networks: KnetONNX provides that functionality. 
 
 [Open Neural Network Exchange (ONNX)](https://onnx.ai/)
  is a community project created by Facebook and Microsoft. It provides a definition of an extensible computation graph model, as well as definitions of built-in operators and standard data types.
