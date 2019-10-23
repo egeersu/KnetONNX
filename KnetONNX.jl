@@ -1,6 +1,15 @@
 module KnetONNX
 
-using ProtoBuf, MacroTools, DataFlow, Statistics
+using Pkg
+Pkg.add("ProtoBuf")
+Pkg.add("MacroTools")
+Pkg.add("DataFlow")
+Pkg.add("Statistics")
+
+using ProtoBuf
+using MacroTools
+using DataFlow
+using Statistics
 
 include("onnx_pb.jl")
 include("convert.jl")
