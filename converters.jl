@@ -1,22 +1,28 @@
 KL = include("./KnetLayers/src/KnetLayers.jl")
 
+# ONNX file -> Graph
+function ONNXtoGraph(file)
+    f = readproto(open(file), Proto.ModelProto());
+    f = convert(f).graph
+end
+
+# ONNX file -> KnetModel
+function ONNXtoKnet(file)
+    g = ONNXtoGraph(file)
+    KnetModel(g)
+end
+
+# ONNX file -> ChainModel
 function ONNXtoChain(file)
     g = ONNXtoGraph(file)
     lst = GraphtoList(g)
     ChainModel(lst)
 end
 
-function ONNXtoGraph(file)
-    f = readproto(open(file), Proto.ModelProto());
-    f = convert(f).graph
-end
-
-function ONNXtoKnet(file)
-    g = ONNXtoGraph(file)
-    KnetModel(g)
-end
-
+# prints an ONNX graph
 function Display_Graph(g)
+    println("model inputs: ", (x->x.name).(g.input))
+    println("model outputs: ", (x->x.name).(g.output))
     for (i, node) in enumerate(g.node)
         print("(op", i, ") ", node.op_type)
         println()
@@ -29,6 +35,7 @@ function Display_Graph(g)
     end
 end
 
+# doesnt do much?
 function get_weight_dims(g)
     tensordims = Dict()
     for k in keys(g.initializer)
@@ -37,6 +44,7 @@ function get_weight_dims(g)
     tensordims
 end
 
+# delete this once KnetModel Works (only works for ChainModel)
 function GraphtoList(g)
     weightdims = get_weight_dims(g);
     layers = []
@@ -58,6 +66,8 @@ function GraphtoList(g)
     layers
 end
 
+
+# graph node, graph -> KnetLayer
 function node_to_layer(node,g)
     weightdims = get_weight_dims(g);
     if node.op_type == "Relu"; return node_to_relu(node, weightdims); end
@@ -73,6 +83,9 @@ function node_to_layer(node,g)
     if node.op_type == "RNN"; return node_to_RNN(node,g); end
     if node.op_type == "Squeeze"; return node_to_squeeze(node); end
     if node.op_type == "Unsqueeze"; return node_to_unsqueeze(node); end
+    
+    if node.op_type == "Gemm"; return node_to_gemm(node, weightdims, g); end
+
 end
 
 
@@ -86,10 +99,12 @@ function node_to_relu(node, weightdims)
     KL.ReLU()
 end
 
+#Node -> KnetLayer
 function node_to_leakyrelu(node, g)
     alpha = node.attribute[:alpha]
     LeakyReLU(alpha)
 end
+
 
 #conv1 = KnetONNX.KnetLayers.Conv(;height=3, width=3, inout = 3=>64)
 #currently treating [1,1,1,1] padding as an integer 1, same for stride
@@ -135,6 +150,11 @@ end
 function node_to_flatten(node, weightdims)
     KL.Flatten()
 end
+
+function node_to_Gemm(inputs)
+    x = inputs[1]
+    w = 
+
 
 function node_to_gemm(node, weightdims, g)
     layer = KL.Linear(input=1,output=1)
@@ -189,9 +209,6 @@ function (s::squeeze_layer)(x)
     new_size = (new_size...,)
     reshape(x, new_size)
 end
-
-
-
 
 
 
