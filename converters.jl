@@ -1,14 +1,32 @@
 KL = include("./KnetLayers/src/KnetLayers.jl")
 
-function ONNXtoKnet(file)
+function ONNXtoChain(file)
     g = ONNXtoGraph(file)
     lst = GraphtoList(g)
-    KnetModel(lst)
+    ChainModel(lst)
 end
 
 function ONNXtoGraph(file)
     f = readproto(open(file), Proto.ModelProto());
     f = convert(f).graph
+end
+
+function ONNXtoKnet(file)
+    g = ONNXtoGraph(file)
+    KnetModel(g)
+end
+
+function Display_Graph(g)
+    for (i, node) in enumerate(g.node)
+        print("(op", i, ") ", node.op_type)
+        println()
+        for (i, input) in enumerate(node.input)
+            println("\tinput", i, ": " , input)
+        end
+        for (i, output) in enumerate(node.output)
+            println("\toutput", i, ": " , output)
+        end
+    end
 end
 
 function get_weight_dims(g)
@@ -34,6 +52,8 @@ function GraphtoList(g)
         #if node.op_type == "BatchNormalization"; push!(layers, node_to_batchnorm(node, g)); end
         if node.op_type == "ImageScaler"; push!(layers, node_to_imagescaler(node,g)); end
         if node.op_type == "RNN"; push!(layers, node_to_RNN(node,g)); end
+        if node.op_type == "Squeeze"; push!(layers, node_to_squeeze(node)); end
+        if node.op_type == "Unsqueeze"; push!(layers, node_to_unsqueeze(node)); end
     end
     layers
 end
@@ -132,3 +152,46 @@ function node_to_RNN(node, g)
     activations = node.attribute[:activations]
     hidden_size = node.attribute[:hidden_size]
 end
+
+
+# SQUEEZE
+function node_to_squeeze(node)
+    squeeze_layer(node.attribute[:axes])
+end
+
+mutable struct squeeze_layer
+    axes
+end
+
+function (s::squeeze_layer)(x)
+    new_size = []
+    for (i, dim) in enumerate(size(x))
+        if dim>1; push!(new_size, dim); end
+    end
+    new_size = (new_size...,)
+    reshape(x, new_size)
+end
+
+
+
+
+
+
+# UNSQUEEZE
+function node_to_unsqueeze(node)
+    unsqueeze_layer(node.attribute[:axes])
+end
+
+mutable struct unsqueeze_layer
+    axes
+end
+
+
+function (u::unsqueeze_layer)(x)
+    data = [t for t in size(x)]
+    axes = [a+1 for a in u.axes]
+    for i in axes; insert!(data, i, 1); end
+    new_size = (data...,)
+    reshape(x, new_size)
+end
+
