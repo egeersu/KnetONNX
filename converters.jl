@@ -58,6 +58,24 @@ function GraphtoList(g)
     layers
 end
 
+function node_to_layer(node,g)
+    weightdims = get_weight_dims(g);
+    if node.op_type == "Relu"; return node_to_relu(node, weightdims); end
+    if node.op_type == "LeakyReLU"; return node_to_leakyrelu(node, g); end
+    if node.op_type == "Conv"; return node_to_conv(node, weightdims, g); end
+    if node.op_type == "MaxPool"; return node_to_pool(node); end
+    if node.op_type == "Dropout"; return node_to_dropout(node, weightdims); end
+    if node.op_type == "Flatten"; return node_to_flatten(node, weightdims); end
+    if node.op_type == "Gemm"; return node_to_gemm(node, weightdims, g); end
+    if node.op_type == "Add"; return node_to_add(node, g); end
+    #if node.op_type == "BatchNormalization"; push!(layers, node_to_batchnorm(node, g)); end
+    if node.op_type == "ImageScaler"; return node_to_imagescaler(node,g); end
+    if node.op_type == "RNN"; return node_to_RNN(node,g); end
+    if node.op_type == "Squeeze"; return node_to_squeeze(node); end
+    if node.op_type == "Unsqueeze"; return node_to_unsqueeze(node); end
+end
+
+
 #get weights from dictionary
 function checkweight(g, w)
     if w in keys(g.initializer); g.initializer[w]; else; "weight not initialized"; end
