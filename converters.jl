@@ -69,7 +69,7 @@ function node_to_layer(node,g)
     if node.op_type == "Gemm"; return node_to_gemm(node, weightdims, g); end
     if node.op_type == "Add"; return node_to_add(node, g); end
     #if node.op_type == "BatchNormalization"; push!(layers, node_to_batchnorm(node, g)); end
-    if node.op_type == "ImageScaler"; return node_to_imagescaler(node,g); end
+    #if node.op_type == "ImageScaler"; return node_to_imagescaler(node,g); end
     if node.op_type == "RNN"; return node_to_RNN(node,g); end
     if node.op_type == "Squeeze"; return node_to_squeeze(node); end
     if node.op_type == "Unsqueeze"; return node_to_unsqueeze(node); end
