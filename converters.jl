@@ -20,7 +20,7 @@ function ONNXtoChain(file)
 end
 
 # prints an ONNX graph
-function Display_Graph(g)
+function PrintGraph(g)
     println("model inputs: ", (x->x.name).(g.input))
     println("model outputs: ", (x->x.name).(g.output))
     for (i, node) in enumerate(g.node)
@@ -67,27 +67,34 @@ function GraphtoList(g)
 end
 
 
-# graph node, graph -> KnetLayer
-function node_to_layer(node,g)
-    weightdims = get_weight_dims(g);
-    if node.op_type == "Relu"; return node_to_relu(node, weightdims); end
-    if node.op_type == "LeakyReLU"; return node_to_leakyrelu(node, g); end
-    if node.op_type == "Conv"; return node_to_conv(node, weightdims, g); end
-    if node.op_type == "MaxPool"; return node_to_pool(node); end
-    if node.op_type == "Dropout"; return node_to_dropout(node, weightdims); end
-    if node.op_type == "Flatten"; return node_to_flatten(node, weightdims); end
-    if node.op_type == "Gemm"; return node_to_gemm(node, weightdims, g); end
-    if node.op_type == "Add"; return node_to_add(node, g); end
-    #if node.op_type == "BatchNormalization"; push!(layers, node_to_batchnorm(node, g)); end
-    #if node.op_type == "ImageScaler"; return node_to_imagescaler(node,g); end
-    if node.op_type == "RNN"; return node_to_RNN(node,g); end
-    if node.op_type == "Squeeze"; return node_to_squeeze(node); end
-    if node.op_type == "Unsqueeze"; return node_to_unsqueeze(node); end
-    
-    if node.op_type == "Gemm"; return node_to_gemm(node, weightdims, g); end
-
+# graph node, graph -> ModelLayer
+function node_to_layer(node, g)
+    if node.op_type == "Gemm"; return node_to_gemm(node, g); end
 end
 
+#returns (names of tensors used for forward pass, KnetLayer, output tensor names)
+function node_to_gemm(node, g)
+    input1 = node.input[1]
+    
+    #the layer is a Knet Layer
+    layer = KnetONNX.KnetLayers.Linear(input=1,output=1)
+    
+    # use g.initializer to modify KnetLayer
+    w_name = node.input[2]
+    b_name = node.input[3]
+    w = g.initializer[w_name]
+    b = g.initializer[b_name]
+    layer.bias = b
+    layer.mult.weight = transpose(w)
+    
+    # return input tensor NAMES, it is called args: [input1, ...]
+    # you can take the inputs from model.tensors using these names
+    args = [input1]
+    outs = [node]
+   
+    # returns these 3, use these to create ModelLayer
+    (args, layer, node.output)
+end
 
 #get weights from dictionary
 function checkweight(g, w)
@@ -96,7 +103,14 @@ end
 
 #Node -> KnetLayer
 function node_to_relu(node, weightdims)
-    KL.ReLU()
+    layer = KL.Linear(input=1,output=1)
+    w_name = node.input[2]
+    b_name = node.input[3]
+    w = g.initializer[w_name]
+    b = g.initializer[b_name]
+    layer.bias = b
+    layer.mult.weight = transpose(w)
+    layer
 end
 
 #Node -> KnetLayer
@@ -153,7 +167,7 @@ end
 
 function node_to_Gemm(inputs)
     x = inputs[1]
-    w = 
+end
 
 
 function node_to_gemm(node, weightdims, g)
