@@ -66,36 +66,6 @@ function GraphtoList(g)
     layers
 end
 
-
-# graph node, graph -> ModelLayer
-function node_to_layer(node, g)
-    if node.op_type == "Gemm"; return node_to_gemm(node, g); end
-end
-
-#returns (names of tensors used for forward pass, KnetLayer, output tensor names)
-function node_to_gemm(node, g)
-    input1 = node.input[1]
-    
-    #the layer is a Knet Layer
-    layer = KnetONNX.KnetLayers.Linear(input=1,output=1)
-    
-    # use g.initializer to modify KnetLayer
-    w_name = node.input[2]
-    b_name = node.input[3]
-    w = g.initializer[w_name]
-    b = g.initializer[b_name]
-    layer.bias = b
-    layer.mult.weight = transpose(w)
-    
-    # return input tensor NAMES, it is called args: [input1, ...]
-    # you can take the inputs from model.tensors using these names
-    args = [input1]
-    outs = [node]
-   
-    # returns these 3, use these to create ModelLayer
-    (args, layer, node.output)
-end
-
 #get weights from dictionary
 function checkweight(g, w)
     if w in keys(g.initializer); g.initializer[w]; else; "weight not initialized"; end
