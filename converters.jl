@@ -36,6 +36,11 @@ function convert(node, g)
     if node.op_type == "Add"; return converter_add(node, g); end
     if node.op_type == "Relu"; return converter_relu(node, g); end
     if node.op_type == "LeakyRelu"; return converter_leakyrelu(node,g); end
+    if node.op_type == "Conv"; return converter_cnn(node,g); end
+    if node.op_type == "MaxPool"; return converter_maxpool(node,g); end
+    if node.op_type == "AveragePool"; return converter_avgpool(node,g); end
+    if node.op_type == "Dropout"; return converter_dropout(node,g); end
+    if node.op_type == "Flatten"; return converter_flatten(node,g); end
 end
 
 
@@ -106,14 +111,16 @@ end
 # CONV
 #conv1 = KnetONNX.KnetLayers.Conv(;height=3, width=3, inout = 3=>64)
 #currently treating [1,1,1,1] padding as an integer 1, same for stride
-function node_to_conv(node, weightdims, g)
-    dw = weightdims[node.input[2]]
+function converter_cnn(node, g)
+    args = node.input
+    out = node.output
+    
     padding = 0
     strides = 0
     if :pads in keys(node.attribute); padding = node.attribute[:pads][1]; end
     if :strides in keys(node.attribute); stride = node.attribute[:strides][1]; end
 
-    layer = KL.Conv(height=dw[1],width=dw[2],inout=dw[3]=>dw[4]; padding = padding, stride = stride)
+    layer = KnetONNX.KL.Conv(height=1,width=1,inout=1=>1; padding = padding, stride = stride)
 
     if length(node.input) >= 2
         w_name = node.input[2]
@@ -127,30 +134,53 @@ function node_to_conv(node, weightdims, g)
         b = g.initializer[b_name]
         layer.bias = reshape(b, 1, 1, size(b)[1], 1)
     end
-    layer
+    (args, layer, out)
 end
 
-# POOL
+# MaxPool
 #currently treating [1,1,1,1] padding as an integer 1, same for stride
-function node_to_pool(node)
+function converter_maxpool(node, g)
+    args = node.input
+    outs = node.output
     stride = 0
     padding = 0
 
     if :pads in keys(node.attribute); padding = node.attribute[:pads][1]; end
     if :strides in keys(node.attribute); stride = node.attribute[:strides][1]; end
 
-    KL.Pool(padding=padding, stride=stride)
+    layer = KL.Pool(padding=padding, stride=stride)
+    (args, layer, outs)
+end
+
+# AveragePool
+function converter_avgpool(node, g)
+    args = node.input
+    outs = node.output
+    stride = 0
+    padding = 0
+
+    if :pads in keys(node.attribute); padding = node.attribute[:pads][1]; end
+    if :strides in keys(node.attribute); stride = node.attribute[:strides][1]; end
+
+    layer = KL.Pool(padding=padding, stride=stride, mode=1)
+    (args, layer, outs)
 end
 
 # DROPOUT
-function node_to_dropout(node, weightdims)
-    KL.Dropout(p = node.attribute[:ratio])
+function converter_dropout(node, g)
+    args = node.input
+    outs = node.output
+    layer = KL.Dropout(p = node.attribute[:ratio])
+    (args, layer, outs)
 end
 
 
 # FLATTEN
-function node_to_flatten(node, weightdims)
-    KL.Flatten()
+function converter_flatten(node, g)
+    args = node.input
+    outs = node.input
+    layer = KL.Flatten()
+    (args, layer, outs)
 end
 
 
