@@ -34,6 +34,8 @@ end
 function convert(node, g)
     if node.op_type == "Gemm"; return converter_gemm(node, g); end
     if node.op_type == "Add"; return converter_add(node, g); end
+    if node.op_type == "Relu"; return converter_relu(node, g); end
+    if node.op_type == "LeakyRelu"; return converter_leakyrelu(node,g); end
 end
 
 
@@ -48,7 +50,7 @@ end
     # - outs:  the names of the tensors that are the outputs of the calculations. These are just the names: strings.
 
 
-# GEMM
+# GEMM - done
 function converter_gemm(node, g)
     input1 = node.input[1]
     
@@ -72,7 +74,8 @@ function converter_gemm(node, g)
     (args, layer, node.output)
 end
 
-# ADD
+# ADD - done 
+# move this to KnetLayers
 struct AddLayer; end
 (a::AddLayer)(x,y) = x+y
 
@@ -83,23 +86,21 @@ function converter_add(node, g)
     return (args, layer, outs)
 end
 
-# RELU
-function node_to_relu(node, weightdims)
-    layer = KL.Linear(input=1,output=1)
-    w_name = node.input[2]
-    b_name = node.input[3]
-    w = g.initializer[w_name]
-    b = g.initializer[b_name]
-    layer.bias = b
-    layer.mult.weight = transpose(w)
-    layer
+# RELU - done
+function converter_relu(node, g)
+    args = node.input
+    layer = KL.ReLU()
+    outs = node.output
+    (args, layer, outs)
 end
 
-# LEAKY RELU
-#Node -> KnetLayer
-function node_to_leakyrelu(node, g)
+# LEAKY RELU - done 
+function converter_leakyrelu(node, g)
+    args = node.input
     alpha = node.attribute[:alpha]
-    LeakyReLU(alpha)
+    layer = KL.LeakyReLU(alpha)
+    outs = node.output
+    (args, layer, outs)
 end
 
 # CONV
