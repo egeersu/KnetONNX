@@ -9,7 +9,7 @@ If you are planning to move your models from PyTorch or Tensorflow to Knet, or s
  
 Operators are implemented externally to the graph, but the set of built-in operators are portable across frameworks. Every framework supporting ONNX will provide implementations of these operators on the applicable data types.
 
-Although not all operations are implemented yet, visit ONNX's [model zoo](https://github.com/onnx/models) to download pre-trained, state-of-the-art models in the ONNX format.
+Although all operations are not yet implemented, visit ONNX's [model zoo](https://github.com/onnx/models) to download pre-trained, state-of-the-art models in the ONNX format.
 
 Once you download the ONNX file, call ONNXtoKnet with the ONNX file's path to create the model.
 
@@ -46,5 +46,4 @@ model(x) #the output is a 1000×10 Array{Float32,2}
 Here are some cool ideas if you want to collaborate:
 - Adding a new [KnetLayer.](https://github.com/ekinakyurek/KnetLayers.jl)
 - Adding a new [Converter:](https://github.com/egeersu/KnetONNX/blob/master/converters.jl) ONNX Graph Node -> KnetLayer
-- New KnetModel functionalities. We still can't handle models with multiple paths. 
 - Testing ONNX models from the [zoo](https://github.com/onnx/models) and sending bug reports. 
