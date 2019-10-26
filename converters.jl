@@ -1,25 +1,20 @@
 KL = include("./KnetLayers/src/KnetLayers.jl")
 
-# ONNX file -> Graph
+# Functions to be exported:
+
+# ONNX file path -> Graph
 function ONNXtoGraph(file)
     f = readproto(open(file), Proto.ModelProto());
     f = convert(f).graph
 end
 
-# ONNX file -> KnetModel
+# ONNX file path -> KnetModel
 function ONNXtoKnet(file)
     g = ONNXtoGraph(file)
     KnetModel(g)
 end
 
-# ONNX file -> ChainModel
-function ONNXtoChain(file)
-    g = ONNXtoGraph(file)
-    lst = GraphtoList(g)
-    ChainModel(lst)
-end
-
-# prints an ONNX graph
+# Prints the Graph in a pretty format
 function PrintGraph(g)
     println("model inputs: ", (x->x.name).(g.input))
     println("model outputs: ", (x->x.name).(g.output))
@@ -35,43 +30,60 @@ function PrintGraph(g)
     end
 end
 
-# doesnt do much?
-function get_weight_dims(g)
-    tensordims = Dict()
-    for k in keys(g.initializer)
-        tensordims[k] = size(g.initializer[k])
-    end
-    tensordims
+# Given a node, calls the appropriate constructor for the corresponding (args, layer, outs)
+function convert(node, g)
+    if node.op_type == "Gemm"; return converter_gemm(node, g); end
+    if node.op_type == "Add"; return converter_add(node, g); end
 end
 
-# delete this once KnetModel Works (only works for ChainModel)
-function GraphtoList(g)
-    weightdims = get_weight_dims(g);
-    layers = []
-    for node in g.node
-        if node.op_type == "Relu"; push!(layers, node_to_relu(node, weightdims)); end
-        if node.op_type == "LeakyReLU"; push!(layers, node_to_leakyrelu(node, g)); end
-        if node.op_type == "Conv"; push!(layers, node_to_conv(node, weightdims, g)); end
-        if node.op_type == "MaxPool"; push!(layers, node_to_pool(node)); end
-        if node.op_type == "Dropout"; push!(layers, node_to_dropout(node, weightdims)); end
-        if node.op_type == "Flatten"; push!(layers, node_to_flatten(node, weightdims)); end
-        if node.op_type == "Gemm"; push!(layers, node_to_gemm(node, weightdims, g)); end
-        if node.op_type == "Add"; push!(layers, node_to_add(node, g)); end
-        #if node.op_type == "BatchNormalization"; push!(layers, node_to_batchnorm(node, g)); end
-        if node.op_type == "ImageScaler"; push!(layers, node_to_imagescaler(node,g)); end
-        if node.op_type == "RNN"; push!(layers, node_to_RNN(node,g)); end
-        if node.op_type == "Squeeze"; push!(layers, node_to_squeeze(node)); end
-        if node.op_type == "Unsqueeze"; push!(layers, node_to_unsqueeze(node)); end
-    end
-    layers
+
+
+
+
+# Converters Begin Here
+# A converter's inputs: graph node and the graph
+# they return 3 elements:
+    # - args:  the names of the tensors that will be needed for the calculations. These are just the names: strings.
+    # - layer: a KnetLayer will be constructed. If the weights are in the initializer, the layer will be modified with them.
+    # - outs:  the names of the tensors that are the outputs of the calculations. These are just the names: strings.
+
+
+# GEMM
+function converter_gemm(node, g)
+    input1 = node.input[1]
+    
+    #the layer is a Knet Layer
+    layer = KnetONNX.KnetLayers.Linear(input=1,output=1)
+    
+    # use g.initializer to modify KnetLayer
+    w_name = node.input[2]
+    b_name = node.input[3]
+    w = g.initializer[w_name]
+    b = g.initializer[b_name]
+    layer.bias = b
+    layer.mult.weight = transpose(w)
+    
+    # return input tensor NAMES, it is called args: [input1, ...]
+    # you can take the inputs from model.tensors using these names
+    args = [input1]
+    outs = [node]
+   
+    # returns these 3, use these to create ModelLayer
+    (args, layer, node.output)
 end
 
-#get weights from dictionary
-function checkweight(g, w)
-    if w in keys(g.initializer); g.initializer[w]; else; "weight not initialized"; end
+# ADD
+struct AddLayer; end
+(a::AddLayer)(x,y) = x+y
+
+function converter_add(node, g)
+    args = node.input
+    outs = node.output
+    layer = AddLayer()
+    return (args, layer, outs)
 end
 
-#Node -> KnetLayer
+# RELU
 function node_to_relu(node, weightdims)
     layer = KL.Linear(input=1,output=1)
     w_name = node.input[2]
@@ -83,13 +95,14 @@ function node_to_relu(node, weightdims)
     layer
 end
 
+# LEAKY RELU
 #Node -> KnetLayer
 function node_to_leakyrelu(node, g)
     alpha = node.attribute[:alpha]
     LeakyReLU(alpha)
 end
 
-
+# CONV
 #conv1 = KnetONNX.KnetLayers.Conv(;height=3, width=3, inout = 3=>64)
 #currently treating [1,1,1,1] padding as an integer 1, same for stride
 function node_to_conv(node, weightdims, g)
@@ -116,6 +129,7 @@ function node_to_conv(node, weightdims, g)
     layer
 end
 
+# POOL
 #currently treating [1,1,1,1] padding as an integer 1, same for stride
 function node_to_pool(node)
     stride = 0
@@ -127,30 +141,19 @@ function node_to_pool(node)
     KL.Pool(padding=padding, stride=stride)
 end
 
+# DROPOUT
 function node_to_dropout(node, weightdims)
     KL.Dropout(p = node.attribute[:ratio])
 end
 
+
+# FLATTEN
 function node_to_flatten(node, weightdims)
     KL.Flatten()
 end
 
-function node_to_Gemm(inputs)
-    x = inputs[1]
-end
 
-
-function node_to_gemm(node, weightdims, g)
-    layer = KL.Linear(input=1,output=1)
-    w_name = node.input[2]
-    b_name = node.input[3]
-    w = g.initializer[w_name]
-    b = g.initializer[b_name]
-    layer.bias = b
-    layer.mult.weight = transpose(w)
-    layer
-end
-
+# BATCHNORM
 function node_to_batchnorm(node, g)
     momentum = node.attribute[:momentum]
     epsilon = node.attribute[:epsilon]
@@ -164,11 +167,17 @@ function node_to_batchnorm(node, g)
     KL.BatchNorm(length(scale); momentum=momentum, mean=mean, var=variance)
 end
 
+
+# IMAGE SCALER
+
 function node_to_imagescaler(node, g)
     bias = node.attribute[:bias]
     scale = node.attribute[:scale]
     #ScalerLayer(x) = scale .* x
 end
+
+
+# RNN
 
 function node_to_RNN(node, g)
     activations = node.attribute[:activations]
@@ -193,7 +202,6 @@ function (s::squeeze_layer)(x)
     new_size = (new_size...,)
     reshape(x, new_size)
 end
-
 
 
 # UNSQUEEZE
