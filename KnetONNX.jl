@@ -16,5 +16,5 @@ include("convert.jl")
 include("new_types.jl")
 include("graph/graph.jl")
 include("converters.jl"); export ONNXtoKnet, ONNXtoGraph, PrintGraph;
-include("KnetModel.jl")
+include("KnetModel.jl"); export forward, KnetModel
 end

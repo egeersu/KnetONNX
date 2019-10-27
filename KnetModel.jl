@@ -68,32 +68,40 @@ function forward(km::KnetModel, ml::ModelLayer)
 
 function (m::KnetModel)(x)
         
+    println("forward begins")
         # REGISTER X
     
     #dumb version
     # check if we want multiple inputs (x should be a list) or a single input (x is a single array)
-    #if length(m.model_inputs) == 1; m.tensors[m.model_inputs[1]] = x; 
-    #    else; for (i,model_input) in enumerate(m.model_inputs); m.tensors[model_input] = x[i]; end; end
+    if length(m.model_inputs) == 1; m.tensors[m.model_inputs[1]] = x; 
+        else; for (i,model_input) in enumerate(m.model_inputs); m.tensors[model_input] = x[i]; end; end
     
-    m.tensors[m.model_inputs...] = x
+    #m.tensors[m.model_inputs...] = x
+    
+    println("inputs saved")
     
     #m.tensors[m.model_inputs...] = 100
 
         # LOOP UNTIL ALL TENSORS ARE CALCULATED
     # do until all model.tensors are filled 
     # iterate over all layers and call forward on that layer
+    iter = 0
     while Nothing in values(m.tensors)
         for layer in m.model_layers
             forward(m, layer)
         end
+        println("iter: ", iter)
+        iter += 1
     end
     
+    print("loop finished")
+    
+    
         # RETURN MODEL OUTPUTS
-    m.tensors[m.model_outputs...]
-    #= DUMB VERSION
+    #m.tensors[m.model_outputs...]
+    # DUMB VERSION
     # could be multiple
     if length(m.model_outputs) == 1; return m.tensors[m.model_outputs[1]]; 
         else; outs = []; for out in m.model_outputs; push!(outs, m.tensors[out]); end; return outs; end
-    =#
-    
+        
 end
