@@ -41,10 +41,12 @@ function convert(node, g)
     if node.op_type == "AveragePool"; return converter_avgpool(node,g); end
     if node.op_type == "Dropout"; return converter_dropout(node,g); end
     if node.op_type == "Flatten"; return converter_flatten(node,g); end
+    if node.op_type == "RNN"; return converter_rnn(node, g); end
 end
 
-
-
+function converter_rnn(node, g)
+    node
+end
 
 
 # Converters Begin Here
