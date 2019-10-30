@@ -40,11 +40,10 @@ model(x) #the output is a 1000×10 Array{Float32,2}
 - [x] Add
 - [x] BatchNormalization
 - [x] ImageScaler
-- [ ] RNN
-
+- [ ] RNN 
 ## Collaboration
 Here are some cool ideas if you want to collaborate:
+- All tools to create a model from scratch are implemented, but we still don't have an export to ONNX functionality. This would be a tough problem so feel free to get in contact. 
 - Adding a new [KnetLayer.](https://github.com/ekinakyurek/KnetLayers.jl)
 - Adding a new [Converter:](https://github.com/egeersu/KnetONNX/blob/master/converters.jl) ONNX Graph Node -> KnetLayer
-- New KnetModel functionalities. We still can't handle models with multiple paths. 
 - Testing ONNX models from the [zoo](https://github.com/onnx/models) and sending bug reports. 
