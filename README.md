@@ -32,13 +32,13 @@ model(x) #the output is a 1000×10 Array{Float32,2}
 ## Supported Operations
 - [x] ReLU
 - [x] LeakyReLU
-- [x] Conv
+- [ ] Conv
 - [x] MaxPool
 - [x] Dropout
 - [x] Flatten
 - [x] Gemm
 - [x] Add
-- [x] BatchNormalization
+- [ ] BatchNormalization
 - [x] ImageScaler
 - [ ] RNN 
 ## Collaboration
