@@ -22,6 +22,6 @@ end
 Pkg.add("PkgTemplates")
 using PkgTemplates
 
-t = Template(user="egeersu", dir="/Users/egeersu/Desktop/KnetONNX")
+t = Template(user="egeersu")
 
-generate("KnetONNX", t)
+generate("KnetONNX1", t)
