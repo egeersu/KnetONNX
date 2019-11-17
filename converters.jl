@@ -5,13 +5,7 @@ KL = include("./KnetLayers/src/KnetLayers.jl")
 # ONNX file path -> Graph
 function ONNXtoGraph(file)
     f = readproto(open(file), Proto.ModelProto());
-    f = convert(f).graph
-end
-
-# ONNX file path -> KnetModel
-function ONNXtoKnet(file)
-    g = ONNXtoGraph(file)
-    KnetModel(g)
+    convert(f).graph
 end
 
 # Prints the Graph in a pretty format
@@ -30,7 +24,9 @@ function PrintGraph(g)
     end
 end
 
-# Given a node, calls the appropriate constructor for the corresponding (args, layer, outs)
+"""
+Given a node, calls the appropriate constructor for the corresponding (args, layer, outs)
+"""
 function convert(node, g)
     if node.op_type == "Gemm"; return converter_gemm(node, g); end
     if node.op_type == "Add"; return converter_add(node, g); end
@@ -44,18 +40,20 @@ function convert(node, g)
     if node.op_type == "RNN"; return converter_rnn(node, g); end
 end
 
+
 function converter_rnn(node, g)
-    node
+    1
 end
 
-
-# Converters Begin Here
+"""
+Converters Begin Here
 # A converter's inputs: graph node and the graph
 # they return 3 elements:
     # - args:  the names of the tensors that will be needed for the calculations. These are just the names: strings.
     # - layer: a KnetLayer will be constructed. If the weights are in the initializer, the layer will be modified with them.
     # - outs:  the names of the tensors that are the outputs of the calculations. These are just the names: strings.
 
+"""
 
 # GEMM - done
 function converter_gemm(node, g)

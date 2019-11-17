@@ -1,27 +1,16 @@
 module KnetONNX
 
 using Pkg
-Pkg.add("ProtoBuf")
-Pkg.add("MacroTools")
-Pkg.add("DataFlow")
-Pkg.add("Statistics")
+packages = ["ProtoBuf", "MacroTools", "DataFlow", "Statistics"]
+for p in packages; Pkg.add(p); end
 
-using ProtoBuf
-using MacroTools
-using DataFlow
-using Statistics
+using ProtoBuf, MacroTools, DataFlow, Statistics
 
 include("onnx_pb.jl")
 include("convert.jl")
 include("new_types.jl")
 include("graph/graph.jl")
-include("converters.jl"); export ONNXtoKnet, ONNXtoGraph, PrintGraph;
-include("KnetModel.jl"); export forward, KnetModel
+include("converters.jl"); export ONNXtoGraph, PrintGraph;
+include("KnetModel.jl"); export KnetModel, ModelLayer, forward, PrintModelTensors;
+
 end
-
-Pkg.add("PkgTemplates")
-using PkgTemplates
-
-t = Template(user="egeersu")
-
-generate("KnetONNX1", t)
