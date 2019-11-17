@@ -60,10 +60,10 @@ end
 # GEMM - done
 function converter_gemm(node, g)
     input1 = node.input[1]
-    
+
     #the layer is a Knet Layer
     layer = KnetONNX.KnetLayers.Linear(input=1,output=1)
-    
+
     # use g.initializer to modify KnetLayer
     w_name = node.input[2]
     b_name = node.input[3]
@@ -71,17 +71,17 @@ function converter_gemm(node, g)
     b = g.initializer[b_name]
     layer.bias = b
     layer.mult.weight = transpose(w)
-    
+
     # return input tensor NAMES, it is called args: [input1, ...]
     # you can take the inputs from model.tensors using these names
     args = [input1]
     outs = [node]
-   
+
     # returns these 3, use these to create ModelLayer
     (args, layer, node.output)
 end
 
-# ADD - done 
+# ADD - done
 # move this to KnetLayers
 struct AddLayer; end
 (a::AddLayer)(x,y) = x+y
@@ -101,7 +101,7 @@ function converter_relu(node, g)
     (args, layer, outs)
 end
 
-# LEAKY RELU - done 
+# LEAKY RELU - done
 function converter_leakyrelu(node, g)
     args = node.input
     alpha = node.attribute[:alpha]
@@ -116,7 +116,7 @@ end
 function converter_cnn(node, g)
     args = node.input
     out = node.output
-    
+
     padding = 0
     strides = 0
     if :pads in keys(node.attribute); padding = node.attribute[:pads][1]; end
@@ -254,4 +254,3 @@ function (u::unsqueeze_layer)(x)
     new_size = (data...,)
     reshape(x, new_size)
 end
-

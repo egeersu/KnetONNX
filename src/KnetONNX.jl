@@ -18,3 +18,10 @@ include("graph/graph.jl")
 include("converters.jl"); export ONNXtoKnet, ONNXtoGraph, PrintGraph;
 include("KnetModel.jl"); export forward, KnetModel
 end
+
+Pkg.add("PkgTemplates")
+using PkgTemplates
+
+t = Template(user="egeersu", dir="/Users/egeersu/Desktop/KnetONNX")
+
+generate("KnetONNX", t)
