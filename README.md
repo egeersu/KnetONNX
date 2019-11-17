@@ -29,6 +29,8 @@ x = ones(Float32,224,224,3,10)
 #call KnetModel object with the model input
 model(x) #the output is a 1000×10 Array{Float32,2}
 ```
+For a more detailed tutorial please refer to [MLP_Tutorial](https://github.com/egeersu/KnetONNX/blob/master/MLP_Tutorial.ipynb)
+
 ## Supported Operations
 - [x] ReLU
 - [x] LeakyReLU
