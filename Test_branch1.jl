@@ -1,5 +1,5 @@
-#push!(LOAD_PATH, ".")
-#using KnetONNX
+push!(LOAD_PATH, ".")
+using KnetONNX
 
 # create the graph
 file_path = "/Users/egeersu/Desktop/KnetONNX/@test_onnx_files/branch1.onnx"

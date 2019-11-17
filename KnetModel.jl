@@ -29,6 +29,11 @@ function KnetModel(g::KnetONNX.Types.Graph)
     KnetModel(tensors, model_layers, model_inputs, model_outputs)
 end
 
+function KnetModel(path::String)
+    KnetModel(ONNXtoGraph(path))
+end
+
+
 """
     TensorDict
     Initializes KnetModel.tensors by putting the names in as keys, but the values are Nothing.

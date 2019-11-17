@@ -2,16 +2,16 @@
 
 KnetONNX lets you read an ONNX file and create a Knet Model that can be used for prediction, re-designed or re-trained.
 
-If you are planning to move your models from PyTorch or Tensorflow to Knet, or simply desiring to play with popular pre-trained neural networks: KnetONNX provides that functionality. 
+If you are planning to move your models from PyTorch or Tensorflow to Knet, or simply desiring to play with popular pre-trained neural networks: KnetONNX provides that functionality.
 
 [Open Neural Network Exchange (ONNX)](https://onnx.ai/)
  is a community project created by Facebook and Microsoft. It provides a definition of an extensible computation graph model, as well as definitions of built-in operators and standard data types.
- 
+
 Operators are implemented externally to the graph, but the set of built-in operators are portable across frameworks. Every framework supporting ONNX will provide implementations of these operators on the applicable data types.
 
 Although not all operations are implemented yet, visit ONNX's [model zoo](https://github.com/onnx/models) to download pre-trained, state-of-the-art models in the ONNX format.
 
-Once you download the ONNX file, call ONNXtoKnet with the ONNX file's path to create the model.
+Once you download the ONNX file, call KnetModel() with the ONNX file's path to create the model.
 
 ## Tutorial
 
@@ -21,7 +21,7 @@ Here is how you create the Knet model corresponding to an ONNX file and perform 
 using Knet; using KnetONNX;
 
 #provide the ONNX file's path
-model = ONNXtoKnet("vgg.onnx");
+model = KnetModel("vgg.onnx");
 
 #dummy input for prediction
 x = ones(Float32,224,224,3,10)
@@ -40,10 +40,10 @@ model(x) #the output is a 1000×10 Array{Float32,2}
 - [x] Add
 - [ ] BatchNormalization
 - [x] ImageScaler
-- [ ] RNN 
+- [ ] RNN
 ## Collaboration
 Here are some cool ideas if you want to collaborate:
-- All tools to create a model from scratch are implemented, but we still don't have an export to ONNX functionality. This would be a tough problem so feel free to get in contact. 
+- All tools to create a model from scratch are implemented, but we still don't have an export to ONNX functionality. This would be a tough problem so feel free to get in contact.
 - Adding a new [KnetLayer.](https://github.com/ekinakyurek/KnetLayers.jl)
 - Adding a new [Converter:](https://github.com/egeersu/KnetONNX/blob/master/converters.jl) ONNX Graph Node -> KnetLayer
-- Testing ONNX models from the [zoo](https://github.com/onnx/models) and sending bug reports. 
+- Testing ONNX models from the [zoo](https://github.com/onnx/models) and sending bug reports.
