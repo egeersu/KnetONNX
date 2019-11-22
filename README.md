@@ -43,6 +43,13 @@ For a more detailed tutorial please refer to [MLP_Tutorial](https://github.com/e
 - [ ] BatchNormalization
 - [x] ImageScaler
 - [ ] RNN
+- [x] Unsqueeze
+- [x] Squeeze
+- [x] Concat
+- [x] ConstantOfShape
+- [x] Shape
+- [x] Constant
+
 ## Collaboration
 Here are some cool ideas if you want to collaborate:
 - All tools to create a model from scratch are implemented, but we still don't have an export to ONNX functionality. This would be a tough problem so feel free to get in contact.
