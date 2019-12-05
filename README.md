@@ -34,7 +34,7 @@ For a more detailed tutorial please refer to [MLP_Tutorial](https://github.com/e
 ## Supported Operations
 - [x] ReLU
 - [x] LeakyReLU
-- [ ] Conv
+- [x] Conv
 - [x] MaxPool
 - [x] Dropout
 - [x] Flatten

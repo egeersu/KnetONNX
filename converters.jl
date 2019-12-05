@@ -1,7 +1,5 @@
 KL = include("./KnetLayers/src/KnetLayers.jl")
 
-# Functions to be exported:
-
 # ONNX file path -> Graph
 function ONNXtoGraph(file)
     f = readproto(open(file), Proto.ModelProto());
@@ -148,7 +146,7 @@ function converter_maxpool(node, g)
     if :pads in keys(node.attribute); padding = node.attribute[:pads][1]; end
     if :strides in keys(node.attribute); stride = node.attribute[:strides][1]; end
 
-    layer = KL.Pool(padding=padding, stride=stride)
+    layer = KL.Pool(padding=padding, stride=stride, mode=0)
     (args, layer, outs)
 end
 
@@ -162,7 +160,7 @@ function converter_avgpool(node, g)
     if :pads in keys(node.attribute); padding = node.attribute[:pads][1]; end
     if :strides in keys(node.attribute); stride = node.attribute[:strides][1]; end
 
-    layer = KL.Pool(padding=padding, stride=stride, mode=1)
+    layer = KL.Pool(padding=padding, stride=stride, mode=0)
     (args, layer, outs)
 end
 

@@ -167,10 +167,14 @@ end
 
 function (f::Flatten)(x)
     s = size(x)
-    reshape(x, :, size(x)[end])
+    # batch mode (..., 1) at the end
+    if s[end] == 1
+        #reshape(x, :, size(x)[end-1], 1)
+        reshape(x, :, size(x)[end])
+
+    # no batch
+    else
+        reshape(x, :, size(x)[end])
+    end
 end
-
-
-#
-
 

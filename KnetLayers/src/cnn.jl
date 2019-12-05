@@ -8,9 +8,12 @@ end
 Sampling{T}(;window=2, padding=0, stride=window, mode=0, maxpoolingNanOpt=0, alpha=1) where T <: Function =
     Sampling{T}((window=window, padding=padding, stride=stride, mode=mode, maxpoolingNanOpt=maxpoolingNanOpt, alpha=alpha))
 
-#reshaped so that vgg16 works
-(m::Sampling{typeof(pool)})(x)   =  pool(reshape(x, (size(x)[1:3]..., 1));m.options...)
+(m::Sampling{typeof(pool)})(x)   =  pool(x;m.options...)
 (m::Sampling{typeof(unpool)})(x) =  unpool(x;m.options...)
+
+#reshaped so that vgg16 works
+#(m::Sampling{typeof(pool)})(x)   =  pool(reshape(x, (size(x)[1:3]..., 1));m.options...)
+#(m::Sampling{typeof(unpool)})(x) =  unpool(x;m.options...)
 
 """
     Pool(kwargs...)
@@ -79,15 +82,14 @@ function Filtering{T}(;height::Integer, width::Integer, inout::Pair=1=>1,
     Filtering{T}(w, b, activation; opts...)
 end
 
-Filtering{T}(w, b, activation; stride=1, padding=0, mode=0, upscale=1, alpha=1) where T <: Function =
-    Filtering{T}(w, b, activation, (stride=stride, upscale=upscale, mode=mode, alpha=alpha, padding=padding))
+Filtering{T}(w, b, activation; stride=1, padding=0, mode=0, dilation=1, alpha=1) where T <: Function =
+    Filtering{T}(w, b, activation, (stride=stride, dilation=dilation, mode=mode, alpha=alpha, padding=padding))
 
 (m::Filtering{typeof(conv4)})(x) =
      postConv(m, conv4(m.weight, make4D(x); m.options...), ndims(x))
 
 (m::Filtering{typeof(deconv4)})(x) =
      postConv(m, deconv4(m.weight, make4D(x); m.options...), ndims(x))
-
 """
     Conv(;height=filterHeight, width=filterWidth, inout = 1 => 1, kwargs...)
 
