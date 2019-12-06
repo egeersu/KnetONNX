@@ -160,7 +160,7 @@ function converter_avgpool(node, g)
     if :pads in keys(node.attribute); padding = node.attribute[:pads][1]; end
     if :strides in keys(node.attribute); stride = node.attribute[:strides][1]; end
 
-    layer = KL.Pool(padding=padding, stride=stride, mode=0)
+    layer = KL.Pool(padding=padding, stride=stride, mode=1)
     (args, layer, outs)
 end
 

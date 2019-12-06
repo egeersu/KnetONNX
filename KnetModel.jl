@@ -1,3 +1,6 @@
+import Knet
+import Knet: Data
+
 """
     KnetModel
 
@@ -101,11 +104,7 @@ function forward(km::KnetModel, ml::ModelLayer)
         else; for output in ml.outputs; km.tensors[output] = out; end; end
  end
 
-
-
 function (m::KnetModel)(args...)
-
-    println("forward begins")
 
     # REGISTER X
     # dumb version
@@ -113,7 +112,9 @@ function (m::KnetModel)(args...)
     #if length(m.model_inputs) == 1; m.tensors[m.model_inputs[1]] = x;
         #else; for (i,model_input) in enumerate(m.model_inputs); m.tensors[model_input] = x[i]; end; end
     
-    for (i, arg) in enumerate(args); m.tensors[m.model_inputs[i]] = arg; end
+    for (i, arg) in enumerate(args)
+        m.tensors[m.model_inputs[i]] = arg
+    end
 
 
     #m.tensors[m.model_inputs...] = x
@@ -151,3 +152,7 @@ function PrintModelTensors(model::KnetModel)
         else println(k, "\t=> ", size(tensors[k])); end
     end
 end
+
+
+#(m::KnetModel)(t,x,y) = Knet.nll(m(x),y)
+#(m::KnetModel)(d::Data) = Knet.mean(m(x,y) for (x,y) in d)
