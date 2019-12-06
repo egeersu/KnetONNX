@@ -110,7 +110,7 @@ end
 #conv1 = KnetONNX.KnetLayers.Conv(;height=3, width=3, inout = 3=>64)
 #currently treating [1,1,1,1] padding as an integer 1, same for stride
 function converter_cnn(node, g)
-    args = node.input
+    args = [node.input[1]]
     out = node.output
 
     padding = 0
@@ -176,7 +176,7 @@ end
 # FLATTEN
 function converter_flatten(node, g)
     args = node.input
-    outs = node.input
+    outs = node.output
     layer = KL.Flatten()
     (args, layer, outs)
 end

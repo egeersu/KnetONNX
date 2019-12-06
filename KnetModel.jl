@@ -11,7 +11,7 @@
 
 """
 mutable struct KnetModel
-    tensors #dictionary: tensor names -> actual arrays
+    tensors #dictionary: string -> tensor
     model_layers
     model_inputs
     model_outputs
@@ -22,7 +22,7 @@ Given a Graph, construct the corresponding KnetModel
 """
 function KnetModel(g::KnetONNX.Types.Graph)
     model_layers = get_ModelLayers(g)
-    tensors = TensorDict(model_layers)
+    tensors = TensorDict(model_layers, g)
     model_inputs = [i.name for i in g.input]
     model_outputs = [o.name for o in g.output]
     KnetModel(tensors, model_layers, model_inputs, model_outputs)
@@ -38,11 +38,14 @@ end
     Initializes KnetModel.tensors by putting the names in as keys, but the values are Nothing.
 """
 #omitted weights, might need them later
-function TensorDict(model_layers)
+function TensorDict(model_layers, g)
     tensors = Dict()
     for layer in model_layers
         for input in layer.inputs; tensors[input] = Nothing; end
         for input in layer.outputs; tensors[input] = Nothing; end
+    end
+    for t in keys(g.initializer)
+        if t in keys(tensors); tensors[t] = g.initializer[t]; end
     end
     tensors
 end
@@ -90,7 +93,8 @@ function forward(km::KnetModel, ml::ModelLayer)
     inputs = (key-> km.tensors[key]).(ml.inputs)
     if length(inputs) == 1; out = ml.layer(inputs[1]);
         else; out = ml.layer(inputs...); end
-
+        #else; out = ml.layer(inputs[1]); end
+       
         # SAVE OUTPUTS
         # check if there are multiple outputs (rnn etc.) before saving them to model.tensors
     if length(ml.outputs) == 1; km.tensors[ml.outputs[1]] = out;
@@ -99,21 +103,20 @@ function forward(km::KnetModel, ml::ModelLayer)
 
 
 
-function (m::KnetModel)(x)
+function (m::KnetModel)(args...)
 
     println("forward begins")
 
     # REGISTER X
     # dumb version
     # check if we want multiple inputs (x should be a list) or a single input (x is a single array)
-    if length(m.model_inputs) == 1; m.tensors[m.model_inputs[1]] = x;
-        else; for (i,model_input) in enumerate(m.model_inputs); m.tensors[model_input] = x[i]; end; end
+    #if length(m.model_inputs) == 1; m.tensors[m.model_inputs[1]] = x;
+        #else; for (i,model_input) in enumerate(m.model_inputs); m.tensors[model_input] = x[i]; end; end
+    
+    for (i, arg) in enumerate(args); m.tensors[m.model_inputs[i]] = arg; end
+
 
     #m.tensors[m.model_inputs...] = x
-
-    #println("inputs saved")
-
-    #m.tensors[m.model_inputs...] = 100
 
     # LOOP UNTIL ALL TENSORS ARE CALCULATED
     # do until all model.tensors are filled
