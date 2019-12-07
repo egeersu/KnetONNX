@@ -52,7 +52,7 @@ For a more detailed tutorial please refer to [MLP_Tutorial](https://github.com/e
 
 ## Collaboration
 Here are some cool ideas if you want to collaborate:
-- All tools to create a model from scratch are implemented, but we still don't have an export to ONNX functionality. This would be a tough problem so feel free to get in contact.
-- Adding a new [KnetLayer.](https://github.com/ekinakyurek/KnetLayers.jl)
-- Adding a new [Converter:](https://github.com/egeersu/KnetONNX/blob/master/converters.jl) ONNX Graph Node -> KnetLayer
+- Export functionality. This would be a tough problem so feel free to get in contact.
+- Adding a new [KnetLayer.](https://github.com/egeersu/KnetONNX/tree/master/KnetLayers)
+- Adding a new [Converter:](https://github.com/egeersu/KnetONNX/blob/master/converters.jl) (ONNX Operator -> KnetLayer)
 - Testing ONNX models from the [zoo](https://github.com/onnx/models) and sending bug reports.
