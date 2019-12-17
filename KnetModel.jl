@@ -1,5 +1,4 @@
 import Knet
-import Knet: Data
 
 """
     KnetModel
@@ -18,6 +17,7 @@ mutable struct KnetModel
     model_layers
     model_inputs
     model_outputs
+    graph
 end
 
 """
@@ -28,7 +28,8 @@ function KnetModel(g::KnetONNX.Types.Graph)
     tensors = TensorDict(model_layers, g)
     model_inputs = [i.name for i in g.input]
     model_outputs = [o.name for o in g.output]
-    KnetModel(tensors, model_layers, model_inputs, model_outputs)
+    graph = g
+    KnetModel(tensors, model_layers, model_inputs, model_outputs, graph)
 end
 
 function KnetModel(path::String)
@@ -128,15 +129,19 @@ function (m::KnetModel)(args...)
         end
     end
 
-    #print("loop finished")
-
-
-        # RETURN MODEL OUTPUTS
+    # Gather outputs
+    outs = []
     #m.tensors[m.model_outputs...]
     # DUMB VERSION
     # could be multiple
-    if length(m.model_outputs) == 1; return m.tensors[m.model_outputs[1]];
-        else; outs = []; for out in m.model_outputs; push!(outs, m.tensors[out]); end; return outs; end
+    if length(m.model_outputs) == 1; outs = m.tensors[m.model_outputs[1]];
+        else; for out in m.model_outputs; push!(outs, m.tensors[out]); end;  end
+    
+    # reset model.tensors (figure out a smarter/faster reset)
+    m.tensors = TensorDict(m.model_layers, m.graph)
+
+    # return outputs
+    return outs
 
 end
 
@@ -153,6 +158,12 @@ function PrintModelTensors(model::KnetModel)
     end
 end
 
+import Knet: Data
 
-#(m::KnetModel)(t,x,y) = Knet.nll(m(x),y)
-#(m::KnetModel)(d::Data) = Knet.mean(m(x,y) for (x,y) in d)
+(m::KnetModel)(x,y) = Knet.nll(m(x), y)
+
+"""
+    Calling KnetModel with a Knet.Data object computes the mean nll for 
+"""
+(m::KnetModel)(d::Data) = Knet.mean(m(x,y) for (x,y) in d)
+

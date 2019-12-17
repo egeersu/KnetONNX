@@ -43,6 +43,7 @@ function converter_rnn(node, g)
     1
 end
 
+## TODO: convert all onnx params to knet params (use convert_params(w))
 """
 Converters Begin Here
 # A converter's inputs: graph node and the graph
@@ -52,8 +53,9 @@ Converters Begin Here
     # - outs:  the names of the tensors that are the outputs of the calculations. These are just the names: strings.
 
 """
+ 
+# GEMM - trains bias also for gemm that is not a linear layer, fix that, write new gemm and a separate linear
 
-# GEMM - done
 function converter_gemm(node, g)
     input1 = node.input[1]
 
@@ -64,10 +66,15 @@ function converter_gemm(node, g)
     w_name = node.input[2]
     b_name = node.input[3]
     w = g.initializer[w_name]
+    w = transpose(w)
     b = g.initializer[b_name]
+    
+    w = KnetONNX.KnetLayers.ConvertParams(w)
+    b = KnetONNX.KnetLayers.ConvertParams(b)
+    
     layer.bias = b
-    layer.mult.weight = transpose(w)
-
+    layer.mult.weight = w
+        
     # return input tensor NAMES, it is called args: [input1, ...]
     # you can take the inputs from model.tensors using these names
     args = [input1]
@@ -250,3 +257,6 @@ function (u::unsqueeze_layer)(x)
     new_size = (data...,)
     reshape(x, new_size)
 end
+
+
+

@@ -46,6 +46,8 @@ include("cnn.jl");         export Pool,UnPool,DeConv,Conv
 include("special.jl");     export MLP
 include("rnn.jl");         export RNN,SRNN,LSTM,GRU,RNNOutput,PadRNNOutput,PadSequenceArray
 include("chain.jl");       export Chain
+include("onnxlayers.jl");  export ConvertParams
 include("../data/IndexedDict.jl");
+
 
 end # module
