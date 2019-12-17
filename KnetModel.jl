@@ -106,6 +106,9 @@ function forward(km::KnetModel, ml::ModelLayer)
  end
 
 function (m::KnetModel)(args...)
+    
+    # reset model.tensors (figure out a smarter/faster reset)
+    m.tensors = TensorDict(m.model_layers, m.graph)
 
     # REGISTER X
     # dumb version
@@ -136,9 +139,6 @@ function (m::KnetModel)(args...)
     # could be multiple
     if length(m.model_outputs) == 1; outs = m.tensors[m.model_outputs[1]];
         else; for out in m.model_outputs; push!(outs, m.tensors[out]); end;  end
-    
-    # reset model.tensors (figure out a smarter/faster reset)
-    m.tensors = TensorDict(m.model_layers, m.graph)
 
     # return outputs
     return outs

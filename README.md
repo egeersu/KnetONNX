@@ -40,9 +40,9 @@ For a more detailed tutorial please refer to [MLP_Tutorial](https://github.com/e
 - [x] Flatten
 - [x] Gemm
 - [x] Add
-- [ ] BatchNormalization
+- [x] BatchNormalization
 - [x] ImageScaler
-- [ ] RNN
+- [x] RNN
 - [x] Unsqueeze
 - [x] Squeeze
 - [x] Concat
