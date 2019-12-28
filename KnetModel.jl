@@ -148,7 +148,7 @@ end
 """
     PrintModelTensors(models::KnetModel)
     Displays your model.tensor, showing the size of the tensors that are calculated.
-    Useful for debugging your model.
+    Might be useful for debugging your model.
 """
 function PrintModelTensors(model::KnetModel)
     tensors = model.tensors
